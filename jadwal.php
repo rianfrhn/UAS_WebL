@@ -1,6 +1,8 @@
 <?php
 $isadmin = false;
-$name = "UNSET";
+session_start();
+$name = $_SESSION["username"];
+if($name == "admin"){$isadmin = true;}
 $jadwal =  [
     ["Hari" => "Senin", "Slot_Waktu" => "07.30 - 08.20", "Dosen" => "Indra", "Ruang" => "AA302", "Mata_Kuliah" => "Sistem Operasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 1"],
     ["Hari" => "Senin", "Slot_Waktu" => "08.20 - 09.10", "Dosen" => "Indra", "Ruang" => "AA302", "Mata_Kuliah" => "Sistem Operasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 1"],
@@ -114,7 +116,7 @@ $jadwal =  [
 ];
 ?>
 <?php
-function displayTable($arr)
+function displayTable($arr, $adminStatus)
 {
     $no = 1;
     foreach ($arr as $value) {
@@ -127,6 +129,9 @@ function displayTable($arr)
         echo "<td>" . $value['Mata_Kuliah'] . "</td>";
         echo "<td>" . $value['Tahun_Ajaran'] . "</td>";
         echo "<td>" . $value['Semester'] . "</td>";
+        if($adminStatus){
+            echo "<td> <a>Edit</a> | <a>Delete</a> </td>";
+        }
         "</tr>";
     }
 }
@@ -145,6 +150,8 @@ function searchTable($arr, $query)
                 echo "<td>" . $value['Mata_Kuliah'] . "</td>";
                 echo "<td>" . $value['Tahun_Ajaran'] . "</td>";
                 echo "<td>" . $value['Semester'] . "</td>";
+
+
                 "</tr>";
                 $no = $no + 1;
                 break;
@@ -204,12 +211,11 @@ function searchTable($arr, $query)
             <th onclick="sortTable(5)">Mata Kuliah</th>
             <th onclick="sortTable(6)">Tahun Ajaran</th>
             <th onclick="sortTable(7)">Semester</th>
-
-            <?php
+            <?php if($isadmin){echo "<th>Controls</th>";}
             if (isset($_POST['search'])) {
                 searchTable($jadwal, $_POST['inputan']);
             } else {
-                displayTable($jadwal);
+                displayTable($jadwal, $isadmin);
             }
             ?>
         </table>

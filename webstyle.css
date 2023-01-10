@@ -2,6 +2,7 @@
 
 *{font-family: 'League Spartan', sans-serif;}
 
+html { overflow-y: scroll; }
 
 
 /* Bordered form */
@@ -37,7 +38,7 @@ form.login {
   input[type=text].username, input[type=password] {
     width: 100%;
   }
-  input[type=text], input[type=password] {
+  input[type=text], input[type=password], .inputs {
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
