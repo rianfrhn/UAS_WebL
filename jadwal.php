@@ -313,14 +313,14 @@ function searchTable($arr, $query, $adminStatus)
             form_data.append('file', file_data);
            // alert(form_data);                             
             $.ajax({
-                url: 'upload_file.php', // <-- point to server-side PHP script 
+                url: 'upload_file.php',
                 cache: false,
                 contentType: false,
                 processData: false,
                 data: form_data,                         
                 type: 'post',
                 success: function(response){
-                    alert(response); // <-- display response from the PHP script, if any
+                    alert(response);
                     location.reload();
                 }
             });
