@@ -186,10 +186,9 @@ function searchTable($arr, $query, $adminStatus)
     echo "<h1>Selamat Datang $name!</h1> <br>";
     if ($isadmin) {
             echo '
-            <form action="upload.php" method="post" enctype="multipart/form-data" align="center">
             Select File:
             <input type="file" name="fileToUpload" id="fileToUpload"><br><br>
-            </form>';
+            <button id="uploadbtn">uploadButton</button>';
         }
     ?>
 
@@ -306,6 +305,25 @@ function searchTable($arr, $query, $adminStatus)
                 data: { search: $("#searchtxt").val() }
             });
             // do your stuff
+        });
+        
+        $('#uploadbtn').on('click', function() {
+            var file_data = $('#fileToUpload').prop('files')[0];   
+            var form_data = new FormData();                  
+            form_data.append('file', file_data);
+           // alert(form_data);                             
+            $.ajax({
+                url: 'upload_file.php', // <-- point to server-side PHP script 
+                cache: false,
+                contentType: false,
+                processData: false,
+                data: form_data,                         
+                type: 'post',
+                success: function(response){
+                    alert(response); // <-- display response from the PHP script, if any
+                    location.reload();
+                }
+            });
         });
     </script>
 </body>
