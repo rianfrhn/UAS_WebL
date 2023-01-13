@@ -1,9 +1,14 @@
 <?php
+require "jadwal_array.php";
 $isadmin = false;
 session_start();
 $name = $_SESSION["username"];
 if($name == "admin"){$isadmin = true;}
-$jadwal =  [
+$jadwal =  getArray();
+/*insert into jadwal (hari, slot_waktu, dosen, ruang, mata_kuliah, tahun_ajaran, semester) values(
+	'Senin', '07.30 - 08.20', 'Indra', 'AA302', 'Sistem Operasi', '2022/2023', 1
+)
+[
     ["Hari" => "Senin", "Slot_Waktu" => "07.30 - 08.20", "Dosen" => "Indra", "Ruang" => "AA302", "Mata_Kuliah" => "Sistem Operasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 1"],
     ["Hari" => "Senin", "Slot_Waktu" => "08.20 - 09.10", "Dosen" => "Indra", "Ruang" => "AA302", "Mata_Kuliah" => "Sistem Operasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 1"],
     ["Hari" => "Senin", "Slot_Waktu" => "09.10 - 10.00", "Dosen" => "Indra", "Ruang" => "AA302", "Mata_Kuliah" => "Sistem Operasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 1"],
@@ -113,14 +118,15 @@ $jadwal =  [
     ["Hari" => "Jumat", "Slot_Waktu" => "13.35 - 14.25", "Dosen" => "Defiana", "Ruang" => "AA205", "Mata_Kuliah" => "Keamanan Informasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 3"],
     ["Hari" => "Jumat", "Slot_Waktu" => "14.25 - 15.15", "Dosen" => "Defiana", "Ruang" => "AA205", "Mata_Kuliah" => "Keamanan Informasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 3"],
     ["Hari" => "Jumat", "Slot_Waktu" => "15.45 - 16.35", "Dosen" => "Defiana", "Ruang" => "AA205", "Mata_Kuliah" => "Keamanan Informasi", "Tahun_Ajaran" => "2022/2023", "Semester" => "Semester 3"]
-];
+];*/
+
 ?>
 <?php
 function displayTable($arr, $adminStatus)
 {
     $no = 1;
     foreach ($arr as $value) {
-        echo "<tr>";
+        echo "<tr id=".$value['id'].">";
         echo "<td>" . $no++ . "</td>";
         echo "<td>" . $value['Hari'] . "</td>";
         echo "<td>" . $value['Slot_Waktu'] . "</td>";
@@ -130,12 +136,12 @@ function displayTable($arr, $adminStatus)
         echo "<td>" . $value['Tahun_Ajaran'] . "</td>";
         echo "<td>" . $value['Semester'] . "</td>";
         if($adminStatus){
-            echo "<td> <a>Edit</a> | <a>Delete</a> </td>";
+            echo "<td> <a href=./edit_table.php?id=".$value['id'].">Edit</a> | <a href=./delete_table.php?id=".$value['id'].">Delete</a> </td>";
         }
         "</tr>";
     }
 }
-function searchTable($arr, $query)
+function searchTable($arr, $query, $adminStatus)
 {
     $no = 1;
     foreach ($arr as $value) {
@@ -150,8 +156,9 @@ function searchTable($arr, $query)
                 echo "<td>" . $value['Mata_Kuliah'] . "</td>";
                 echo "<td>" . $value['Tahun_Ajaran'] . "</td>";
                 echo "<td>" . $value['Semester'] . "</td>";
-
-
+                if($adminStatus){
+                    echo "<td> <a href=./edit_table.php?id=".$value['id'].">Edit</a> | <a href=./delete_table.php?id=".$value['id'].">Delete</a> </td>";
+                }
                 "</tr>";
                 $no = $no + 1;
                 break;
@@ -159,9 +166,6 @@ function searchTable($arr, $query)
         }
     }
 }
-?>
-<?php
-
 ?>
 
 <!DOCTYPE html>
@@ -173,33 +177,25 @@ function searchTable($arr, $query)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="webstyle.css">
     <title>Jadwal</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 </head>
 
 <body>
     
     <?php
-    if (isset($_POST['uname'])) {
-        $name = $_POST['uname'];
-    }
     echo "<h1>Selamat Datang $name!</h1> <br>";
-    if (isset($_POST['adminlogin'])) {
-        echo $_POST['adminlogin'];
-        if ($_POST['adminlogin'] == true) {
-            $isadmin = true;
+    if ($isadmin) {
             echo '
             <form action="upload.php" method="post" enctype="multipart/form-data" align="center">
             Select File:
             <input type="file" name="fileToUpload" id="fileToUpload"><br><br>
             </form>';
         }
-    }
     ?>
 
     <form method="post" align="center">
-        <input type="text" name="inputan" placeholder="search...">
+        <input type="text" name="inputan" placeholder="search..." onchange="onSearch()" id="searchtxt">
         <input type="submit" name="search" value="search" class="palebtn1">
-        <input type="hidden" name="adminlogin" value="<?php echo $isadmin; ?>">
-        <input type="hidden" name="uname" value="<?php echo $name; ?>">
     </form>
     <div class="tabel">
         <table border="2" align="center" id="tabeljadwal">
@@ -212,14 +208,16 @@ function searchTable($arr, $query)
             <th onclick="sortTable(6)">Tahun Ajaran</th>
             <th onclick="sortTable(7)">Semester</th>
             <?php if($isadmin){echo "<th>Controls</th>";}
-            if (isset($_POST['search'])) {
-                searchTable($jadwal, $_POST['inputan']);
+            if (isset($_POST['search']) && $_POST['search'] != "") {
+                searchTable($jadwal, $_POST['inputan'], $isadmin);
             } else {
                 displayTable($jadwal, $isadmin);
             }
             ?>
         </table>
     </div>
+
+    <?php if($isadmin){echo "<a href='add_table.php'><button>Add Data</button></a>";}?>
 
 
 
@@ -299,6 +297,16 @@ function searchTable($arr, $query)
             }
 
         }
+        function onSearch(){
+        }
+        jQuery('#searchtxt').on('input propertychange paste', function() {
+            $.ajax({
+                type: "POST",
+                url: "jadwal.php",
+                data: { search: $("#searchtxt").val() }
+            });
+            // do your stuff
+        });
     </script>
 </body>
 
