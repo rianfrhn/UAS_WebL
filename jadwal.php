@@ -304,7 +304,6 @@ function searchTable($arr, $query, $adminStatus)
                 url: "jadwal.php",
                 data: { search: $("#searchtxt").val() }
             });
-            // do your stuff
         });
         
         $('#uploadbtn').on('click', function() {
